@@ -1474,8 +1474,8 @@
                 const centerX = rect.width / 2;
                 const centerY = rect.height / 2;
                 
-                // Adjust tilt intensity based on fullscreen mode
-                const intensity = card.classList.contains('fullscreen') ? 10 : 20;
+                // Adjust tilt intensity based on fullscreen mode (more subtle)
+                const intensity = card.classList.contains('fullscreen') ? 30 : 40;
                 const rotateX = (y - centerY) / intensity;
                 const rotateY = (centerX - x) / intensity;
                 
