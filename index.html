@@ -1449,31 +1449,54 @@
         // Add mouse move effect for subtle 3D tilt on cards
         cards.forEach(card => {
             card.addEventListener('mousemove', (e) => {
-                if (!card.classList.contains('fullscreen')) {
-                    const rect = card.getBoundingClientRect();
-                    const x = e.clientX - rect.left;
-                    const y = e.clientY - rect.top;
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Adjust tilt intensity based on fullscreen mode
+                const intensity = card.classList.contains('fullscreen') ? 10 : 20;
+                const rotateX = (y - centerY) / intensity;
+                const rotateY = (centerX - x) / intensity;
+                
+                const cardFaces = card.querySelectorAll('.card-face');
+                cardFaces.forEach(face => {
+                    const isFlipped = card.classList.contains('flipped');
+                    const baseTransform = face.classList.contains('card-back') ? 'rotateY(180deg)' : '';
                     
-                    const centerX = rect.width / 2;
-                    const centerY = rect.height / 2;
-                    
-                    const rotateX = (y - centerY) / 20;
-                    const rotateY = (centerX - x) / 20;
-                    
-                    const cardFaces = card.querySelectorAll('.card-face');
-                    cardFaces.forEach(face => {
-                        face.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) ${face.classList.contains('card-back') ? 'rotateY(180deg)' : ''}`;
-                    });
-                }
+                    if (isFlipped) {
+                        // When flipped, apply the tilt to the back face
+                        if (face.classList.contains('card-back')) {
+                            face.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${180 + rotateY}deg)`;
+                        } else {
+                            face.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                        }
+                    } else {
+                        // When not flipped, apply normal tilt
+                        face.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) ${baseTransform}`;
+                    }
+                });
             });
             
             card.addEventListener('mouseleave', () => {
-                if (!card.classList.contains('fullscreen')) {
-                    const cardFaces = card.querySelectorAll('.card-face');
-                    cardFaces.forEach(face => {
+                const cardFaces = card.querySelectorAll('.card-face');
+                cardFaces.forEach(face => {
+                    const isFlipped = card.classList.contains('flipped');
+                    
+                    if (isFlipped) {
+                        // Reset to flipped state
+                        if (face.classList.contains('card-back')) {
+                            face.style.transform = 'perspective(1000px) rotateY(180deg)';
+                        } else {
+                            face.style.transform = 'perspective(1000px) rotateY(0deg)';
+                        }
+                    } else {
+                        // Reset to normal state
                         face.style.transform = face.classList.contains('card-back') ? 'rotateY(180deg)' : '';
-                    });
-                }
+                    }
+                });
             });
         });
     </script>
