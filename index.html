@@ -759,6 +759,281 @@
                 min-height: 300px;
             }
         }
+
+        /* PENTA Roster Card System */
+        .roster {
+            padding: 100px 0;
+            background: var(--secondary-dark);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Cards Container */
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Card Wrapper */
+        .card-wrapper {
+            perspective: 1000px;
+            width: 280px;
+            height: 400px;
+            cursor: pointer;
+            position: relative;
+            justify-self: center;
+        }
+
+        /* Card Container - Holds both sides */
+        .card-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Card flip state */
+        .card-wrapper.flipped .card-container {
+            transform: rotateY(180deg);
+        }
+
+        /* Common card face styles */
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 217, 163, 0.2);
+            border: 2px solid rgba(0, 217, 163, 0.3);
+            background: var(--primary-dark);
+            transition: all 0.3s ease;
+        }
+
+        /* Front face */
+        .card-front {
+            z-index: 2;
+        }
+
+        /* Back face */
+        .card-back {
+            transform: rotateY(180deg);
+        }
+
+        /* Card image styling */
+        .card-face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Hover effects when not in fullscreen */
+        .card-wrapper:not(.fullscreen):hover .card-face {
+            box-shadow: 0 20px 60px rgba(0, 217, 163, 0.4);
+            border-color: var(--primary-teal);
+            transform: translateY(-10px) scale(1.05);
+        }
+
+        /* Glow effect on hover */
+        .card-wrapper:not(.fullscreen):hover .card-face::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00D9A3, #00B589, #5B4B8A, #00D9A3);
+            border-radius: 15px;
+            opacity: 0.75;
+            z-index: -1;
+            filter: blur(10px);
+            animation: glowPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        /* Fullscreen overlay */
+        .fullscreen-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .fullscreen-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        /* Fullscreen card styles */
+        .card-wrapper.fullscreen {
+            position: fixed;
+            width: min(90vw, 600px);
+            height: min(90vh, 850px);
+            z-index: 1000;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: expandToFullscreen 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes expandToFullscreen {
+            from {
+                width: 280px;
+                height: 400px;
+                transform: translate(-50%, -50%) scale(0.8);
+                opacity: 0.7;
+            }
+            to {
+                width: min(90vw, 600px);
+                height: min(90vh, 850px);
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 40px;
+            height: 40px;
+            background: var(--primary-teal);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .card-wrapper.fullscreen .close-btn {
+            display: flex;
+        }
+
+        .close-btn:hover {
+            background: var(--dark-teal);
+            transform: rotate(90deg);
+        }
+
+        /* Flip button for fullscreen mode */
+        .flip-btn {
+            position: absolute;
+            bottom: -50px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 2rem;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: none;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+
+        .card-wrapper.fullscreen .flip-btn {
+            display: block;
+        }
+
+        .flip-btn:hover {
+            transform: translateX(-50%) translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 217, 163, 0.4);
+        }
+
+        /* Card info overlay */
+        .card-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(to top, rgba(26, 26, 46, 0.95), transparent);
+            color: white;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .card-wrapper:hover .card-info {
+            transform: translateY(0);
+        }
+
+        .card-name {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-teal);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-role {
+            color: var(--text-gray);
+            font-size: 1rem;
+        }
+
+        /* Loading placeholder */
+        .card-loading {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-dark) 0%, var(--secondary-dark) 50%, var(--primary-dark) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+            border-radius: 15px;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Mobile adjustments for cards */
+        @media (max-width: 768px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+                justify-items: center;
+            }
+
+            .card-wrapper.fullscreen {
+                width: 95vw;
+                height: 70vh;
+            }
+
+            .close-btn {
+                top: 10px;
+                right: 10px;
+            }
+
+            .flip-btn {
+                bottom: -40px;
+                padding: 0.5rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -781,6 +1056,8 @@
             </div>
             <button class="mobile-menu-toggle" id="mobileMenuToggle">☰</button>
             <ul class="nav-links" id="navLinks">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#roster">Roster</a></li>
             </ul>
         </div>
     </nav>
@@ -795,6 +1072,76 @@
             
             <p class="hero-subtitle">Where Fat Fucks Find a Home</p>
         </div>
+    </section>
+
+    <!-- Roster Section -->
+    <section class="roster" id="roster">
+        <div class="section-title">PENTA ROSTER</div>
+        
+        <div class="cards-container">
+            <!-- Card 1 -->
+            <div class="card-wrapper" data-name="PENTA">
+                <div class="card-container">
+                    <div class="card-face card-front">
+                        <div class="card-loading"></div>
+                        <img src="penta_front.png" alt="PENTA Front" onload="this.previousElementSibling.style.display='none'">
+                        <div class="card-info">
+                            <div class="card-name">PENTA</div>
+                            <div class="card-role">Content Creator</div>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-loading"></div>
+                        <img src="penta_back.png" alt="PENTA Back" onload="this.previousElementSibling.style.display='none'">
+                    </div>
+                </div>
+                <button class="close-btn">×</button>
+                <button class="flip-btn">Flip Card</button>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="card-wrapper" data-name="PENTA2">
+                <div class="card-container">
+                    <div class="card-face card-front">
+                        <div class="card-loading"></div>
+                        <img src="penta_front.png" alt="PENTA Front" onload="this.previousElementSibling.style.display='none'">
+                        <div class="card-info">
+                            <div class="card-name">PENTA</div>
+                            <div class="card-role">Streamer</div>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-loading"></div>
+                        <img src="penta_back.png" alt="PENTA Back" onload="this.previousElementSibling.style.display='none'">
+                    </div>
+                </div>
+                <button class="close-btn">×</button>
+                <button class="flip-btn">Flip Card</button>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="card-wrapper" data-name="PENTA3">
+                <div class="card-container">
+                    <div class="card-face card-front">
+                        <div class="card-loading"></div>
+                        <img src="penta_front.png" alt="PENTA Front" onload="this.previousElementSibling.style.display='none'">
+                        <div class="card-info">
+                            <div class="card-name">PENTA</div>
+                            <div class="card-role">Role Player</div>
+                        </div>
+                    </div>
+                    <div class="card-face card-back">
+                        <div class="card-loading"></div>
+                        <img src="penta_back.png" alt="PENTA Back" onload="this.previousElementSibling.style.display='none'">
+                    </div>
+                </div>
+                <button class="close-btn">×</button>
+                <button class="flip-btn">Flip Card</button>
+            </div>
+        </div>
+
+        <!-- Fullscreen overlay -->
+        <div class="fullscreen-overlay"></div>
     </section>
 
 
@@ -1097,6 +1444,114 @@
                 setTimeout(() => {
                     ripple.remove();
                 }, 600);
+            });
+        });
+
+        // PENTA Card System JavaScript
+        // Get all card elements
+        const cards = document.querySelectorAll('.card-wrapper');
+        const fullscreenOverlay = document.querySelector('.fullscreen-overlay');
+        let currentFullscreenCard = null;
+
+        cards.forEach(card => {
+            const cardContainer = card.querySelector('.card-container');
+            const closeBtn = card.querySelector('.close-btn');
+            const flipBtn = card.querySelector('.flip-btn');
+            
+            // Click on card to go fullscreen
+            cardContainer.addEventListener('click', (e) => {
+                // Don't trigger fullscreen if already in fullscreen mode
+                if (!card.classList.contains('fullscreen')) {
+                    openFullscreen(card);
+                } else {
+                    // In fullscreen mode, clicking the card flips it
+                    toggleFlip(card);
+                }
+            });
+
+            // Close button functionality
+            closeBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeFullscreen(card);
+            });
+
+            // Flip button functionality
+            flipBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleFlip(card);
+            });
+        });
+
+        // Click on overlay to close fullscreen
+        if (fullscreenOverlay) {
+            fullscreenOverlay.addEventListener('click', () => {
+                if (currentFullscreenCard) {
+                    closeFullscreen(currentFullscreenCard);
+                }
+            });
+        }
+
+        // Open fullscreen function
+        function openFullscreen(card) {
+            currentFullscreenCard = card;
+            card.classList.add('fullscreen');
+            if (fullscreenOverlay) {
+                fullscreenOverlay.classList.add('active');
+            }
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close fullscreen function
+        function closeFullscreen(card) {
+            card.classList.remove('fullscreen');
+            card.classList.remove('flipped');
+            if (fullscreenOverlay) {
+                fullscreenOverlay.classList.remove('active');
+            }
+            document.body.style.overflow = '';
+            currentFullscreenCard = null;
+        }
+
+        // Toggle card flip
+        function toggleFlip(card) {
+            card.classList.toggle('flipped');
+        }
+
+        // Escape key to close fullscreen
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && currentFullscreenCard) {
+                closeFullscreen(currentFullscreenCard);
+            }
+        });
+
+        // Add mouse move effect for subtle 3D tilt on cards
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                if (!card.classList.contains('fullscreen')) {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = (y - centerY) / 20;
+                    const rotateY = (centerX - x) / 20;
+                    
+                    const cardFaces = card.querySelectorAll('.card-face');
+                    cardFaces.forEach(face => {
+                        face.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) ${face.classList.contains('card-back') ? 'rotateY(180deg)' : ''}`;
+                    });
+                }
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                if (!card.classList.contains('fullscreen')) {
+                    const cardFaces = card.querySelectorAll('.card-face');
+                    cardFaces.forEach(face => {
+                        face.style.transform = face.classList.contains('card-back') ? 'rotateY(180deg)' : '';
+                    });
+                }
             });
         });
     </script>
